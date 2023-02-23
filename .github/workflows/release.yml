@@ -12,7 +12,7 @@ jobs:
       VERSION: ${{ needs.version.outputs.version }}
     strategy:
       matrix:
-        id: [ "1.19" ]
+        id: [ "1.19", "1.20" ]
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2.1.0
