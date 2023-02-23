@@ -37,7 +37,7 @@ jobs:
         with:
           images: ${{ secrets.RELEASE_REGISTRY }}/osm-edge-interceptor-golang
           tags: |
-            type=raw,value=1.19
+            type=raw,value=${{ matrix.id }}
 
       - name: Build and Push - ${{ matrix.id }}
         uses: docker/build-push-action@v4.0.0
