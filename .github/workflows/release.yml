@@ -35,11 +35,9 @@ jobs:
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v4.3.0
         with:
-          images: cybwan/osm-edge-interceptor-golang-${{ matrix.id }}
+          images: ${{ secrets.RELEASE_REGISTRY }}/osm-edge-interceptor-golang
           tags: |
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}.{{minor}}.{{patch}}
-            type=sha,format=long
+            type=raw,value=${{ matrix.id }}
 
       - name: Build and Push - ${{ matrix.id }}
         uses: docker/build-push-action@v4.0.0
