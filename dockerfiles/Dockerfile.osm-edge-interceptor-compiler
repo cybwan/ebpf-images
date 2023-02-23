@@ -17,6 +17,7 @@ RUN apt-get update &&\
 
 ARG KERNEL_VERSION=v5.4
 RUN set -x ; echo ${KERNEL_VERSION}
+ARG KERNEL_VERSION=v5.4
 RUN git clone -b ${KERNEL_VERSION} https://github.com/torvalds/linux.git --depth 1
 
 RUN cd /app/linux/tools/bpf/bpftool && \
