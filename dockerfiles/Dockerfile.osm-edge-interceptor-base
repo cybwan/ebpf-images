@@ -2,9 +2,9 @@ ARG DOCKER_REGISTRY
 ARG CTR_REGISTRY
 ARG CTR_TAG
 
-FROM $CTR_REGISTRY/osm-edge-interceptor-compiler-u20.04:$CTR_TAG as compiler
+FROM $CTR_REGISTRY/osm-edge-interceptor-compiler:$CTR_TAG as compiler
 
-FROM $DOCKER_REGISTRY/ubuntu:20.04
+FROM $DOCKER_REGISTRY/ubuntu:$CTR_TAG
 
 COPY --from=compiler /usr/local/sbin/bpftool /usr/local/sbin/bpftool
 
