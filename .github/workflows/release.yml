@@ -101,7 +101,7 @@ jobs:
     needs: [UbuntuImages]
     strategy:
       matrix:
-        id: [ "20.04", "22.04" ]
+        id: [ {ubuntu:"20.04", kernel:"v5.4"}, {ubuntu:"22.04", kernel:"v5.15"} ]
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2.1.0
@@ -120,15 +120,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Docker meta - ${{ matrix.id }}
+      - name: Docker meta - ${{ matrix.id.ubuntu }}
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v4.3.0
         with:
           images: ${{ secrets.RELEASE_REGISTRY }}/osm-edge-interceptor
           tags: |
-            type=raw,value=compiler${{ matrix.id }}
+            type=raw,value=compiler${{ matrix.id.ubuntu }}
 
-      - name: Build and Push - ${{ matrix.id }}
+      - name: Build and Push - ${{ matrix.id.ubuntu }}
         uses: docker/build-push-action@v4.0.0
         with:
           context: .
@@ -136,7 +136,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           build-args: |
             CTR_REGISTRY=${{ secrets.RELEASE_REGISTRY }}
-            CTR_TAG=${{ matrix.id }}
+            CTR_TAG=${{ matrix.id.ubuntu }}
+            KERNEL_VERSION=${{ matrix.id.kernel }}
           push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
