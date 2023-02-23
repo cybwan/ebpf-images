@@ -101,7 +101,7 @@ jobs:
     needs: [UbuntuImages]
     strategy:
       matrix:
-        id: [ {ubuntu:"20.04", kernel:"v5.4"}, {ubuntu:"22.04", kernel:"v5.15"} ]
+        id: [ {ubuntu: "20.04", kernel: "v5.4"}, {ubuntu: "22.04", kernel: "v5.15"} ]
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2.1.0
