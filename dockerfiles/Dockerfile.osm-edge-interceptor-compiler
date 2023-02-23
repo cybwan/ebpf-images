@@ -1,7 +1,7 @@
 ARG CTR_REGISTRY
 ARG CTR_TAG
 
-FROM $CTR_REGISTRY/osm-edge-interceptor:ubuntu:$CTR_TAG
+FROM $CTR_REGISTRY/osm-edge-interceptor:ubuntu$CTR_TAG
 
 WORKDIR /app
 

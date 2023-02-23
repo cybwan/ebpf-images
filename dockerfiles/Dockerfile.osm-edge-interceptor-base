@@ -3,7 +3,7 @@ ARG CTR_TAG
 
 FROM $CTR_REGISTRY/osm-edge-interceptor:compiler$CTR_TAG as compiler
 
-FROM $CTR_REGISTRY/osm-edge-interceptor:ubuntu:$CTR_TAG
+FROM $CTR_REGISTRY/osm-edge-interceptor:ubuntu$CTR_TAG
 
 COPY --from=compiler /usr/local/sbin/bpftool /usr/local/sbin/bpftool
 
