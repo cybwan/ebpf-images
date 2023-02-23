@@ -1,0 +1,20 @@
+ARG CTR_REGISTRY
+ARG CTR_TAG
+
+FROM $CTR_REGISTRY/osm-edge-interceptor:ubuntu:$CTR_TAG
+
+WORKDIR /app
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update &&\
+    apt-get install -y --no-install-recommends git cmake make gcc python3 libncurses-dev gawk flex bison openssl \
+    libssl-dev dkms libelf-dev libudev-dev libpci-dev libiberty-dev autoconf && \
+    apt-get purge --auto-remove && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN git clone -b v5.15 https://github.com/torvalds/linux.git --depth 1
+
+RUN cd /app/linux/tools/bpf/bpftool && \
+    make && make install
