@@ -33,9 +33,9 @@ jobs:
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v4.3.0
         with:
-          images: ${{ secrets.RELEASE_REGISTRY }}/osm-edge-interceptor-golang
+          images: ${{ secrets.RELEASE_REGISTRY }}/osm-edge-interceptor
           tags: |
-            type=raw,value=${{ matrix.id }}
+            type=raw,value=golang.${{ matrix.id }}
 
       - name: Build and Push - ${{ matrix.id }}
         uses: docker/build-push-action@v4.0.0
@@ -78,9 +78,9 @@ jobs:
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v4.3.0
         with:
-          images: ${{ secrets.RELEASE_REGISTRY }}/osm-edge-interceptor-compiler
+          images: ${{ secrets.RELEASE_REGISTRY }}/osm-edge-interceptor
           tags: |
-            type=raw,value=${{ matrix.id }}
+            type=raw,value=compiler.${{ matrix.id }}
 
       - name: Build and Push - ${{ matrix.id }}
         uses: docker/build-push-action@v4.0.0
@@ -123,9 +123,9 @@ jobs:
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v4.3.0
         with:
-          images: ${{ secrets.RELEASE_REGISTRY }}/osm-edge-interceptor-base
+          images: ${{ secrets.RELEASE_REGISTRY }}/osm-edge-interceptor
           tags: |
-            type=raw,value=${{ matrix.id }}
+            type=raw,value=base.${{ matrix.id }}
 
       - name: Build and Push - ${{ matrix.id }}
         uses: docker/build-push-action@v4.0.0

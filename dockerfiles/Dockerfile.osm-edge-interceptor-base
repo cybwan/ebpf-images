@@ -2,7 +2,7 @@ ARG DOCKER_REGISTRY
 ARG CTR_REGISTRY
 ARG CTR_TAG
 
-FROM $CTR_REGISTRY/osm-edge-interceptor-compiler:$CTR_TAG as compiler
+FROM $CTR_REGISTRY/osm-edge-interceptor:compiler.$CTR_TAG as compiler
 
 FROM $DOCKER_REGISTRY/ubuntu:$CTR_TAG
 
