@@ -47,5 +47,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           build-args: |
             GO_VERSION=${{ matrix.id }}
+          push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
