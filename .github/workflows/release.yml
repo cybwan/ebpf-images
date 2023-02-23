@@ -35,7 +35,7 @@ jobs:
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v4.3.0
         with:
-          images: cybwan/osm-edge-interceptor-golang
+          images: ${{ secrets.RELEASE_REGISTRY }}/osm-edge-interceptor-golang
           tags: |
             type=raw,value=1.19
 
