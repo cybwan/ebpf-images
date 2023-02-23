@@ -1,0 +1,54 @@
+name: Release
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  images:
+    name: Docker GoLang Images
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    strategy:
+      matrix:
+        id: [ "1.19", "1.20" ]
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2.1.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2.4.1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2.1.0
+        with:
+          username: ${{ secrets.RELEASE_DOCKER_USER }}
+          password: ${{ secrets.RELEASE_DOCKER_PASS }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Docker meta - ${{ matrix.id }}
+        id: docker_meta
+        uses: crazy-max/ghaction-docker-meta@v4.3.0
+        with:
+          images: ${{ secrets.RELEASE_REGISTRY }}/osm-edge-interceptor-golang-${{ matrix.id }}
+          tags: |
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}.{{minor}}.{{patch}}
+            type=sha,format=long
+
+      - name: Build and Push - ${{ matrix.id }}
+        uses: docker/build-push-action@v4.0.0
+        with:
+          context: .
+          file: ./dockerfiles/Dockerfile.osm-edge-interceptor-golang
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            GO_VERSION=${{ matrix.id }}
+          push: ${{ (github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == format('refs/heads/{0}', github.event.repository.default_branch) )) }}
+          tags: ${{ matrix.id }}
+          labels: ${{ steps.docker_meta.outputs.labels }}
