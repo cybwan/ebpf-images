@@ -35,7 +35,7 @@ jobs:
         with:
           images: ${{ secrets.RELEASE_REGISTRY }}/osm-edge-interceptor
           tags: |
-            type=raw,value=ubuntu{{ matrix.id }}
+            type=raw,value=ubuntu${{ matrix.id }}
 
       - name: Build and Push - ${{ matrix.id }}
         uses: docker/build-push-action@v4.0.0
