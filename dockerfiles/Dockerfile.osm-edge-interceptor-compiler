@@ -1,5 +1,6 @@
 ARG CTR_REGISTRY
 ARG CTR_TAG
+ARG KERNEL_VERSION
 
 FROM $CTR_REGISTRY/osm-edge-interceptor:ubuntu$CTR_TAG
 
@@ -15,6 +16,7 @@ RUN apt-get update &&\
     rm -rf /var/lib/apt/lists/*
 
 ARG KERNEL_VERSION
+RUN set -x ; echo ${KERNEL_VERSION}
 RUN git clone -b ${KERNEL_VERSION} https://github.com/torvalds/linux.git --depth 1
 
 RUN cd /app/linux/tools/bpf/bpftool && \
