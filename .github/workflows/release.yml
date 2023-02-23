@@ -12,7 +12,7 @@ jobs:
       VERSION: ${{ needs.version.outputs.version }}
     strategy:
       matrix:
-        id: [ "1.19", "1.20" ]
+        id: [ "1.19" ]
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2.1.0
@@ -35,9 +35,9 @@ jobs:
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v4.3.0
         with:
-          images: ${{ secrets.RELEASE_REGISTRY }}/osm-edge-interceptor-golang
+          images: cybwan/osm-edge-interceptor-golang
           tags: |
-            type=raw,value=${{ matrix.id }}
+            type=raw,value=1.19
 
       - name: Build and Push - ${{ matrix.id }}
         uses: docker/build-push-action@v4.0.0
