@@ -17,7 +17,7 @@ jobs:
         env:
           DOCKER_BUILDX_OUTPUT: type=docker
         run: make docker-build-osm
-      #- name: Setup Trivy
-      #  run: make trivy-ci-setup
-      #- name: Scan docker images for vulnerabilities
-      #  run: make trivy-scan-images
+      - name: Setup Trivy
+        run: make trivy-ci-setup
+      - name: Scan docker images for vulnerabilities
+        run: make trivy-scan-images
