@@ -12,7 +12,7 @@ LDFLAGS ?= "-s -w"
 
 .PHONY: docker-build-interceptor-ubuntu
 docker-build-interceptor-ubuntu:
-	docker buildx build \
+	docker buildx build --builder osm \
 	--platform=$(DOCKER_BUILDX_PLATFORM) \
 	-o $(DOCKER_BUILDX_OUTPUT) \
 	-t $(CTR_REGISTRY)/osm-edge-interceptor:ubuntu$(UBUNTU_VERSION) \
