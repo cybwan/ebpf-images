@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Build docker images
         env:
-          DOCKER_BUILDX_OUTPUT: type=docker
+          DOCKER_BUILDX_OUTPUT: type=registry
         run: make docker-build-osm
       #- name: Setup Trivy
       #  run: make trivy-ci-setup
