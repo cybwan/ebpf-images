@@ -5,8 +5,8 @@ on:
       - main
 
 jobs:
-  imagescan:
-    name: Scan images for security vulnerabilities
+  ubuntuimagescan:
+    name: Scan Ubuntu images for security vulnerabilities
     runs-on: ubuntu-latest
     env:
       CTR_REGISTRY: ${{ secrets.RELEASE_REGISTRY }}
