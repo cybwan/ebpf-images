@@ -100,22 +100,22 @@ trivy-ci-setup:
 	echo $$(pwd) >> $(GITHUB_PATH)
 
 # Show all vulnerabilities in logs
-trivy-scan-ubuntu-verbose-%: NAME=$(@:trivy-scan-verbose-%=%)
+trivy-scan-ubuntu-verbose-%: NAME=$(@:trivy-scan-ubuntu-verbose-%=%)
 trivy-scan-ubuntu-verbose-%:
 	trivy image "$(CTR_REGISTRY)/osm-edge-interceptor:$(NAME)$(UBUNTU_VERSION)"
 
 # Exit if vulnerability exists
-trivy-scan-ubuntu-fail-%: NAME=$(@:trivy-scan-fail-%=%)
+trivy-scan-ubuntu-fail-%: NAME=$(@:trivy-scan-ubuntu-fail-%=%)
 trivy-scan-ubuntu-fail-%:
 	trivy image --exit-code 1 --ignore-unfixed --severity MEDIUM,HIGH,CRITICAL "$(CTR_REGISTRY)/osm-edge-interceptor:$(NAME)$(UBUNTU_VERSION)"
 
 # Show all vulnerabilities in logs
-trivy-scan-golang-verbose-%: NAME=$(@:trivy-scan-verbose-%=%)
+trivy-scan-golang-verbose-%: NAME=$(@:trivy-scan-golang-verbose-%=%)
 trivy-scan-golang-verbose-%:
 	trivy image "$(CTR_REGISTRY)/osm-edge-interceptor:$(NAME)$(GOLANG_VERSION)"
 
 # Exit if vulnerability exists
-trivy-scan-golang-fail-%: NAME=$(@:trivy-scan-fail-%=%)
+trivy-scan-golang-fail-%: NAME=$(@:trivy-scan-golang-fail-%=%)
 trivy-scan-golang-fail-%:
 	trivy image --exit-code 1 --ignore-unfixed --severity MEDIUM,HIGH,CRITICAL "$(CTR_REGISTRY)/osm-edge-interceptor:$(NAME)$(GOLANG_VERSION)"
 
