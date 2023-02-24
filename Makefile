@@ -17,8 +17,6 @@ DOCKER_OSM_TARGETS = $(addprefix docker-build-interceptor-, $(OSM_TARGETS))
 buildx-context:
 	@if ! docker buildx ls | grep -q "^osm "; then docker buildx create --name osm --driver-opt network=host; fi
 
-$(foreach target,$(OSM_TARGETS),$(eval docker-build-interceptor-$(target): buildx-context))
-
 .PHONY: docker-build-interceptor-ubuntu
 docker-build-interceptor-ubuntu:
 	docker buildx build --builder osm \
@@ -86,7 +84,7 @@ docker-build-cross-interceptor-golang: docker-build-interceptor-golang
 
 
 .PHONY: docker-build-osm
-docker-build-osm: $(DOCKER_OSM_TARGETS)
+docker-build-osm: buildx-context $(DOCKER_OSM_TARGETS)
 
 .PHONY: docker-build-cross-osm
 docker-build-cross-osm: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
