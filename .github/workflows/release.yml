@@ -188,3 +188,20 @@ jobs:
           push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
+
+  imagescan:
+    name: Scan images for security vulnerabilities
+    runs-on: ubuntu-latest
+    env:
+      CTR_REGISTRY: "localhost:5000"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build docker images
+        env:
+          DOCKER_BUILDX_OUTPUT: type=docker
+        run: make docker-build-cross
+      - name: Setup Trivy
+        run: make trivy-ci-setup
+      - name: Scan docker images for vulnerabilities
+        run: make trivy-scan-images

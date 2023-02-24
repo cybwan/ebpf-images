@@ -71,6 +71,15 @@ docker-build-interceptor-golang:
 docker-build-cross-interceptor-golang: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
 docker-build-cross-interceptor-golang: docker-build-interceptor-golang
 
+.PHONY: docker-build-cross-interceptor-golang
+docker-build-cross-interceptor-golang: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
+docker-build-cross-interceptor-golang: docker-build-interceptor-golang
+
+
+.PHONY: docker-build-cross
+docker-build-cross: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
+docker-build-cross: docker-build-interceptor-ubuntu docker-build-interceptor-compiler docker-build-interceptor-golang docker-build-interceptor-base
+
 load-images:
 	docker pull ubuntu:20.04
 	docker pull ubuntu:22.04
