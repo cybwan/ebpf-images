@@ -10,6 +10,15 @@ KERNEL_VERSION ?= v5.15
 DOCKER_BUILDX_PLATFORM ?= linux/amd64
 LDFLAGS ?= "-s -w"
 
+OSM_TARGETS = ubuntu compiler golang base
+DOCKER_OSM_TARGETS = $(addprefix docker-build-interceptor-, $(OSM_TARGETS))
+
+.PHONY: buildx-context
+buildx-context:
+	@if ! docker buildx ls | grep -q "^osm "; then docker buildx create --name osm --driver-opt network=host; fi
+
+$(foreach target,$(OSM_TARGETS),$(eval docker-build-interceptor-$(target): buildx-context))
+
 .PHONY: docker-build-interceptor-ubuntu
 docker-build-interceptor-ubuntu:
 	docker buildx build --builder osm \
@@ -76,9 +85,12 @@ docker-build-cross-interceptor-golang: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/
 docker-build-cross-interceptor-golang: docker-build-interceptor-golang
 
 
-.PHONY: docker-build-cross
-docker-build-cross: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
-docker-build-cross: docker-build-interceptor-ubuntu docker-build-interceptor-compiler docker-build-interceptor-golang docker-build-interceptor-base
+.PHONY: docker-build-osm
+docker-build-osm: $(DOCKER_OSM_TARGETS)
+
+.PHONY: docker-build-cross-osm
+docker-build-cross-osm: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
+docker-build-cross-osm: docker-build-osm
 
 load-images:
 	docker pull ubuntu:20.04
