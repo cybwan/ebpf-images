@@ -2,7 +2,7 @@ CTR_REGISTRY ?= cybwan
 CTR_TAG      ?= latest
 DOCKER_BUILDX_OUTPUT ?= type=registry
 
-OSM ?= ../osm-edge-v1.3
+OSM ?= .
 
 DOCKER_REGISTRY ?= docker.io/library
 DOCKER_GO_VERSION = 1.19
