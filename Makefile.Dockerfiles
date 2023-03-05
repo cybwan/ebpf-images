@@ -1,0 +1,30 @@
+CTR_REGISTRY ?= cybwan
+CTR_TAG      ?= latest
+DOCKER_BUILDX_OUTPUT ?= type=registry
+
+OSM ?= ../osm-edge-v1.3
+
+DOCKER_REGISTRY ?= docker.io/library
+DOCKER_GO_VERSION = 1.19
+DOCKER_UBUNTU_VERSION ?=20.04
+DOCKER_BUILDX_PLATFORM ?= linux/amd64
+LDFLAGS ?= "-s -w"
+
+.PHONY: docker-build-interceptor
+docker-build-interceptor:
+	docker buildx build --builder osm \
+	--platform=$(DOCKER_BUILDX_PLATFORM) \
+	-o $(DOCKER_BUILDX_OUTPUT) \
+	-t $(CTR_REGISTRY)/osm-edge-interceptor:$(CTR_TAG) \
+	-f ./dockerfiles/Dockerfile.osm-edge-interceptor \
+	--build-arg DOCKER_REGISTRY=$(DOCKER_REGISTRY) \
+	--build-arg CTR_REGISTRY=$(CTR_REGISTRY) \
+	--build-arg CTR_TAG=$(CTR_TAG) \
+	--build-arg UBUNTU_VERSION=$(DOCKER_UBUNTU_VERSION) \
+	--build-arg GO_VERSION=$(DOCKER_GO_VERSION) \
+	--build-arg LDFLAGS=$(LDFLAGS) \
+	$(OSM)
+
+.PHONY: docker-build-cross-interceptor
+docker-build-cross-interceptor: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
+docker-build-cross-interceptor: docker-build-interceptor
