@@ -11,87 +11,82 @@ DOCKER_BUILDX_PLATFORM ?= linux/amd64
 LDFLAGS ?= "-s -w"
 
 UBUNTU_TARGETS = ubuntu compiler base
-DOCKER_UBUNTU_TARGETS = $(addprefix docker-build-interceptor-, $(UBUNTU_TARGETS))
+DOCKER_UBUNTU_TARGETS = $(addprefix docker-build-, $(UBUNTU_TARGETS))
 
 GOLANG_TARGETS = golang
-DOCKER_GOLANG_TARGETS = $(addprefix docker-build-interceptor-, $(GOLANG_TARGETS))
+DOCKER_GOLANG_TARGETS = $(addprefix docker-build-, $(GOLANG_TARGETS))
 
 .PHONY: buildx-context
 buildx-context:
 	@if ! docker buildx ls | grep -q "^osm "; then docker buildx create --name osm --driver-opt network=host; fi
 
-.PHONY: docker-build-interceptor-ubuntu
-docker-build-interceptor-ubuntu:
+.PHONY: docker-build-ubuntu
+docker-build-ubuntu:
 	docker buildx build --builder osm \
 	--platform=$(DOCKER_BUILDX_PLATFORM) \
 	-o $(DOCKER_BUILDX_OUTPUT) \
-	-t $(CTR_REGISTRY)/osm-edge-interceptor:ubuntu$(UBUNTU_VERSION) \
-	-f ./dockerfiles/Dockerfile.osm-edge-interceptor-ubuntu \
+	-t $(CTR_REGISTRY)/ebpf:ubuntu$(UBUNTU_VERSION) \
+	-f ./dockerfiles/Dockerfile.ubuntu \
 	--build-arg DOCKER_REGISTRY=$(DOCKER_REGISTRY) \
 	--build-arg UBUNTU_VERSION=$(UBUNTU_VERSION) \
 	.
 
-.PHONY: docker-build-cross-interceptor-ubuntu
-docker-build-cross-interceptor-ubuntu: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
-docker-build-cross-interceptor-ubuntu: docker-build-interceptor-ubuntu
+.PHONY: docker-build-cross-ubuntu
+docker-build-cross-ubuntu: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
+docker-build-cross-ubuntu: docker-build-ubuntu
 
-.PHONY: docker-build-interceptor-compiler
-docker-build-interceptor-compiler:
+.PHONY: docker-build-compiler
+docker-build-compiler:
 	docker buildx build --builder osm \
 	--platform=$(DOCKER_BUILDX_PLATFORM) \
 	-o $(DOCKER_BUILDX_OUTPUT) \
-	-t $(CTR_REGISTRY)/osm-edge-interceptor:compiler$(UBUNTU_VERSION) \
-	-f ./dockerfiles/Dockerfile.osm-edge-interceptor-compiler \
+	-t $(CTR_REGISTRY)/ebpf:compiler$(UBUNTU_VERSION) \
+	-f ./dockerfiles/Dockerfile.compiler \
 	--build-arg CTR_REGISTRY=$(CTR_REGISTRY) \
 	--build-arg CTR_TAG=$(UBUNTU_VERSION) \
 	--build-arg KERNEL_VERSION=$(KERNEL_VERSION) \
 	.
 
-.PHONY: docker-build-cross-interceptor-compiler
-docker-build-cross-interceptor-compiler: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
-docker-build-cross-interceptor-compiler: docker-build-interceptor-compiler
+.PHONY: docker-build-cross-compiler
+docker-build-cross-compiler: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
+docker-build-cross-compiler: docker-build-compiler
 
-.PHONY: docker-build-interceptor-base
-docker-build-interceptor-base:
+.PHONY: docker-build-base
+docker-build-base:
 	docker buildx build --builder osm \
 	--platform=$(DOCKER_BUILDX_PLATFORM) \
 	-o $(DOCKER_BUILDX_OUTPUT) \
-	-t $(CTR_REGISTRY)/osm-edge-interceptor:base$(UBUNTU_VERSION) \
-	-f ./dockerfiles/Dockerfile.osm-edge-interceptor-base \
+	-t $(CTR_REGISTRY)/ebpf:base$(UBUNTU_VERSION) \
+	-f ./dockerfiles/Dockerfile.base \
 	--build-arg CTR_REGISTRY=$(CTR_REGISTRY) \
 	--build-arg CTR_TAG=$(UBUNTU_VERSION) \
 	.
 
-.PHONY: docker-build-cross-interceptor-base
-docker-build-cross-interceptor-base: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
-docker-build-cross-interceptor-base: docker-build-interceptor-base
+.PHONY: docker-build-cross-base
+docker-build-cross-base: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
+docker-build-cross-base: docker-build-base
 
-.PHONY: docker-build-interceptor-golang
-docker-build-interceptor-golang:
+.PHONY: docker-build-golang
+docker-build-golang:
 	docker buildx build --builder osm \
 	--platform=$(DOCKER_BUILDX_PLATFORM) \
 	-o $(DOCKER_BUILDX_OUTPUT) \
-	-t $(CTR_REGISTRY)/osm-edge-interceptor:golang$(GOLANG_VERSION) \
-	-f ./dockerfiles/Dockerfile.osm-edge-interceptor-golang \
+	-t $(CTR_REGISTRY)/bpf:golang$(GOLANG_VERSION) \
+	-f ./dockerfiles/Dockerfile.golang \
 	--build-arg DOCKER_REGISTRY=$(DOCKER_REGISTRY) \
 	--build-arg GO_VERSION=$(GOLANG_VERSION) \
 	.
 
-.PHONY: docker-build-cross-interceptor-golang
-docker-build-cross-interceptor-golang: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
-docker-build-cross-interceptor-golang: docker-build-interceptor-golang
+.PHONY: docker-build-cross-golang
+docker-build-cross--golang: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
+docker-build-cross-golang: docker-build-golang
 
-.PHONY: docker-build-cross-interceptor-golang
-docker-build-cross-interceptor-golang: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
-docker-build-cross-interceptor-golang: docker-build-interceptor-golang
+.PHONY: docker-build
+docker-build: buildx-context $(DOCKER_UBUNTU_TARGETS) $(DOCKER_GOLANG_TARGETS)
 
-
-.PHONY: docker-build-osm
-docker-build-osm: buildx-context $(DOCKER_UBUNTU_TARGETS) $(DOCKER_GOLANG_TARGETS)
-
-.PHONY: docker-build-cross-osm
-docker-build-cross-osm: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
-docker-build-cross-osm: docker-build-osm
+.PHONY: docker-build-cross
+docker-build-cross: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
+docker-build-cross: docker-build
 
 .PHONY: trivy-ci-setup
 trivy-ci-setup:
@@ -102,22 +97,22 @@ trivy-ci-setup:
 # Show all vulnerabilities in logs
 trivy-scan-ubuntu-verbose-%: NAME=$(@:trivy-scan-ubuntu-verbose-%=%)
 trivy-scan-ubuntu-verbose-%:
-	trivy image "$(CTR_REGISTRY)/osm-edge-interceptor:$(NAME)$(UBUNTU_VERSION)"
+	trivy image "$(CTR_REGISTRY)/ebpf:$(NAME)$(UBUNTU_VERSION)"
 
 # Exit if vulnerability exists
 trivy-scan-ubuntu-fail-%: NAME=$(@:trivy-scan-ubuntu-fail-%=%)
 trivy-scan-ubuntu-fail-%:
-	trivy image --exit-code 1 --ignore-unfixed --severity MEDIUM,HIGH,CRITICAL "$(CTR_REGISTRY)/osm-edge-interceptor:$(NAME)$(UBUNTU_VERSION)"
+	trivy image --exit-code 1 --ignore-unfixed --severity MEDIUM,HIGH,CRITICAL "$(CTR_REGISTRY)/ebpf:$(NAME)$(UBUNTU_VERSION)"
 
 # Show all vulnerabilities in logs
 trivy-scan-golang-verbose-%: NAME=$(@:trivy-scan-golang-verbose-%=%)
 trivy-scan-golang-verbose-%:
-	trivy image "$(CTR_REGISTRY)/osm-edge-interceptor:$(NAME)$(GOLANG_VERSION)"
+	trivy image "$(CTR_REGISTRY)/ebpf:$(NAME)$(GOLANG_VERSION)"
 
 # Exit if vulnerability exists
 trivy-scan-golang-fail-%: NAME=$(@:trivy-scan-golang-fail-%=%)
 trivy-scan-golang-fail-%:
-	trivy image --exit-code 1 --ignore-unfixed --severity MEDIUM,HIGH,CRITICAL "$(CTR_REGISTRY)/osm-edge-interceptor:$(NAME)$(GOLANG_VERSION)"
+	trivy image --exit-code 1 --ignore-unfixed --severity MEDIUM,HIGH,CRITICAL "$(CTR_REGISTRY)/ebpf:$(NAME)$(GOLANG_VERSION)"
 
 
 .PHONY: trivy-scan-images trivy-scan-images-fail trivy-scan-images-verbose

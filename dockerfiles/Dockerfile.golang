@@ -1,0 +1,10 @@
+ARG DOCKER_REGISTRY
+ARG GO_VERSION
+
+FROM $DOCKER_REGISTRY/golang:$GO_VERSION
+
+RUN apt-get update &&\
+  apt-get upgrade -y && \
+  apt-get purge --auto-remove && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*

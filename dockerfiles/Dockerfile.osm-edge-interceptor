@@ -2,7 +2,7 @@ ARG CTR_REGISTRY
 ARG UBUNTU_VERSION
 ARG GO_VERSION
 
-FROM $CTR_REGISTRY/osm-edge-interceptor:golang$GO_VERSION as osm-interceptor
+FROM $CTR_REGISTRY/ebpf:golang$GO_VERSION as osm-interceptor
 
 WORKDIR /app
 
@@ -21,11 +21,8 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg \
     go build -v -ldflags "-s -w" -o ./dist/osm-cni ./cmd/osm-interceptor/osm-cni/osm-cni.go
-RUN --mount=type=cache,target=/root/.cache/go-build \
-    --mount=type=cache,target=/go/pkg \
-    go build -v -ldflags "-s -w" -o ./dist/osm-fd-back ./cmd/osm-interceptor/osm-fd-back/osm-fd-back.go
 
-FROM $CTR_REGISTRY/osm-edge-interceptor:base$UBUNTU_VERSION
+FROM $CTR_REGISTRY/ebpf:base$UBUNTU_VERSION
 
 WORKDIR /app
 
@@ -33,6 +30,5 @@ COPY bpf bpf
 COPY Makefile.CNI Makefile
 COPY --from=osm-interceptor /app/dist/osm-interceptor osm-interceptor
 COPY --from=osm-interceptor /app/dist/osm-cni osm-cni
-COPY --from=osm-interceptor /app/dist/osm-fd-back osm-fd-back
 
 CMD /app/osm-interceptor
