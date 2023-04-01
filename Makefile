@@ -71,7 +71,7 @@ docker-build-golang:
 	docker buildx build --builder osm \
 	--platform=$(DOCKER_BUILDX_PLATFORM) \
 	-o $(DOCKER_BUILDX_OUTPUT) \
-	-t $(CTR_REGISTRY)/bpf:golang$(GOLANG_VERSION) \
+	-t $(CTR_REGISTRY)/ebpf:golang$(GOLANG_VERSION) \
 	-f ./dockerfiles/Dockerfile.golang \
 	--build-arg DOCKER_REGISTRY=$(DOCKER_REGISTRY) \
 	--build-arg GO_VERSION=$(GOLANG_VERSION) \
