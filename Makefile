@@ -10,7 +10,7 @@ KERNEL_VERSION ?= v5.4
 DOCKER_BUILDX_PLATFORM ?= linux/amd64
 LDFLAGS ?= "-s -w"
 
-UBUNTU_TARGETS = ubuntu compiler base
+UBUNTU_TARGETS = bullseye ubuntu compiler base
 DOCKER_UBUNTU_TARGETS = $(addprefix docker-build-, $(UBUNTU_TARGETS))
 
 GOLANG_TARGETS = golang
@@ -19,6 +19,19 @@ DOCKER_GOLANG_TARGETS = $(addprefix docker-build-, $(GOLANG_TARGETS))
 .PHONY: buildx-context
 buildx-context:
 	@if ! docker buildx ls | grep -q "^osm "; then docker buildx create --name osm --driver-opt network=host; fi
+
+.PHONY: docker-build-bullseye
+docker-build-bullseye:
+	docker buildx build --builder osm \
+	--platform=$(DOCKER_BUILDX_PLATFORM) \
+	-o $(DOCKER_BUILDX_OUTPUT) \
+	-t $(CTR_REGISTRY)/ebpf:bullseye \
+	-f ./dockerfiles/Dockerfile.bullseye \
+	.
+
+.PHONY: docker-build-cross-bullseye
+docker-build-cross-bullseye: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
+docker-build-cross-bullseye: docker-build-bullseye
 
 .PHONY: docker-build-ubuntu
 docker-build-ubuntu:
