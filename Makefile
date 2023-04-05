@@ -30,7 +30,7 @@ docker-build-bullseye:
 	.
 
 .PHONY: docker-build-cross-bullseye
-docker-build-cross-bullseye: DOCKER_BUILDX_PLATFORM=linux/amd64,linux/arm64
+docker-build-cross-bullseye: DOCKER_BUILDX_PLATFORM=linux/amd64
 docker-build-cross-bullseye: docker-build-bullseye
 
 .PHONY: docker-build-ubuntu
